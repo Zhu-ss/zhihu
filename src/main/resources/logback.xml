@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <!--appender代表配置的一个日志输出方式（日志是在控制台输出还是输出到一个文件）和输出格式的模板-->
+    <!--ConsoleAppender 用于将日志输出到控制台-->
+    <appender name="sout" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- 指定输出日志格式处理的类 -->
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <!--具体指定日志输出的格式模板-->
+            <!--2019-11-26 11:06:45.991  INFO 19436 [           main] com.baizh..-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %p %r [%t] %m %n </pattern>
+        </layout>
+    </appender>
+    <!--root跟日志处理, 通常只有一个
+        logback只会处理包含当前日志输出级别以及比他高的级别的日志输出-->
+    <root level="info">
+        <!--引用日志的输出处理模板-->
+        <appender-ref ref="sout"></appender-ref>
+    </root>
+    <!--logger子日志处理，子日志监控可以有多组配置-->
+    <logger name="com.baizhi.dao" level="debug"></logger>
+    <logger name="com.baizhi.service" level="debug"></logger>
+    <logger name="com.baizhi.controller" level="debug"></logger>
+</configuration>

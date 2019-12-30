@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 
+	namespace: 指定当前mapper.xml管理的接口 全限定名
+	注意：一个mapper.xml只能管理一个接口
+	       要在mybatis.xml文件中进行注册
+	       
+-->
+<!-- 路径代表要实现的Dao接口 -->
+<mapper namespace="com.baizhi.dao.PhotoDao">
+    <insert id="insertPhoto" parameterType="Photo">
+        insert into zh_photo values (#{id},#{photo},#{count},#{u_id})
+    </insert>
+    <select id="queryPhoto" resultType="Photo">
+        select * from zh_photo
+        where u_id=#{uid}
+    </select>
+    <update id="updatePhotot">
+        update zh_photo set count =#{count} where id=#{pid}
+    </update>
+    <select id="selectPhoto" resultType="Photo">
+        select * from zh_photo where id=#{pid}
+    </select>
+</mapper>

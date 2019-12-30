@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 
+	namespace: 指定当前mapper.xml管理的接口 全限定名
+	注意：一个mapper.xml只能管理一个接口
+	       要在mybatis.xml文件中进行注册
+	       
+-->
+<!-- 路径代表要实现的Dao接口 -->
+<mapper namespace="com.baizhi.dao.UserDao">
+
+    <select id="login" parameterType="User" resultType="User">
+        select * from ZH_USER
+        where EMAIL=#{email} and PASSWORD=#{password}
+    </select>
+    <insert id="regist" parameterType="User">
+        insert into ZH_USER values (#{id},#{realname},#{tel},#{email},#{password},#{icon},#{status})
+    </insert>
+</mapper>

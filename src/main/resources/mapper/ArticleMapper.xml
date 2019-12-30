@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 
+	namespace: 指定当前mapper.xml管理的接口 全限定名
+	注意：一个mapper.xml只能管理一个接口
+	       要在mybatis.xml文件中进行注册
+	       
+-->
+<!-- 路径代表要实现的Dao接口 -->
+<mapper namespace="com.baizhi.dao.ArticleDao">
+    <resultMap id="ArticleMap" type="Article" >
+        <id column="aid" property="id"></id>
+        <result column="atitle" property="title"></result>
+        <result column="adz_count" property="dz_count"></result>
+        <result column="apl_count" property="pl_count"></result>
+        <collection property="uas" ofType="UA">
+            <id column="uaid" property="id"></id>
+            <result column="uasc_status" property="sc_status"></result>
+        </collection>
+        <collection property="users" ofType="User">
+            <id column="uids" property="id"></id>
+            <result column="urealname" property="realname"></result>
+            <association property="commends" javaType="Commend">
+                <id column="cid" property="id"></id>
+                <result column="ccontent" property="content"></result>
+                <result column="cdz_count" property="dz_count"></result>
+            </association>
+        </collection>
+    </resultMap>
+    <resultMap id="ArticleUserMap" type="Article">
+        <id column="aid" property="id"></id>
+        <result column="atitle" property="title"></result>
+        <result column="adz_count" property="dz_count"></result>
+        <result column="apl_count" property="pl_count"></result>
+        <collection property="uas" ofType="UA">
+            <id column="uaid" property="id"></id>
+            <result column="uasc_status" property="sc_status"></result>
+        </collection>
+        <collection property="commends" ofType="Commend">
+            <id column="cid" property="id"></id>
+            <result column="ccontent" property="content"></result>
+            <result column="cdz_count" property="dz_count"></result>
+            <association property="c_users" javaType="User">
+                <id column="uids" property="id"></id>
+                <result column="urealname" property="realname"></result>
+            </association>
+        </collection>
+    </resultMap>
+    <!-- 下面正常书写 sql语句  select标签是查询标签 id是要实现的接口中方法 resultType是方法返回值 -->
+    <select id="queryAllArticle" resultMap="ArticleMap">
+        select *
+            from (
+                   select a.id         aid
+                        , a.TITLE      atitle
+                        , a.dz_count   adz_count
+                        , a.PL_COUNT   apl_count
+                        , ua.id        uaid
+                        , ua.SC_STATUS uasc_status
+                        , u.ID         uids
+                        , u.realname   urealname
+                        , c.id         cid
+                        , c.CONTENT    ccontent
+                        ,c.dz_count cdz_count
+                   from ZH_ARTICLE a
+                          left join ZH_UA ua
+                                    on a.ID = ua.A_ID
+                          left join ZH_COMMEND c
+                                    on a.ID = c.A_ID
+                          left join ZH_USER u
+                                    on c.U_ID = u.ID
+                   where a.id = 201
+                   order by c.dz_count desc
+                 ) a1
+            limit 0,2
+    </select>
+    <select id="queryAllAs" resultMap="ArticleUserMap">
+        select *
+            from (
+                   select a.id         aid
+                        , a.TITLE      atitle
+                        , a.dz_count   adz_count
+                        , a.PL_COUNT   apl_count
+                        , ua.id        uaid
+                        , ua.SC_STATUS uasc_status
+                        , u.ID         uids
+                        , u.realname   urealname
+                        , c.id         cid
+                        , c.CONTENT    ccontent
+                        ,c.dz_count cdz_count
+                   from ZH_ARTICLE a
+                          left join ZH_UA ua
+                                    on a.ID = ua.A_ID
+                          left join ZH_COMMEND c
+                                    on a.ID = c.A_ID
+                          left join ZH_USER u
+                                    on c.U_ID = u.ID
+                   where a.id = 201
+                   order by c.dz_count desc
+                 ) a1
+            limit 2,99
+    </select>
+    <select id="queryArticle_plus" resultMap="ArticleUserMap" parameterType="String">
+           select a.id         aid
+                , a.TITLE      atitle
+                , a.dz_count   adz_count
+                , a.PL_COUNT   apl_count
+                , ua.id        uaid
+                , ua.SC_STATUS uasc_status
+                , u.ID         uids
+                , u.realname   urealname
+                , c.id         cid
+                , c.CONTENT    ccontent
+                ,c.dz_count cdz_count
+           from ZH_ARTICLE a
+                  left join ZH_UA ua
+                            on a.ID = ua.A_ID
+                  left join ZH_COMMEND c
+                            on a.ID = c.A_ID
+                  left join ZH_USER u
+                            on c.U_ID = u.ID
+           where a.id = 201
+           order by c.dz_count desc
+    </select>
+    <update id="dz_count" parameterType="Article">
+        update ZH_ARTICLE
+        <set>
+            <if test="dz_count !=null">dz_count=#{dz_count}</if>
+        </set>
+        where id=#{id}
+    </update>
+    <select id="selectArticle" resultType="Article" parameterType="String">
+        select * from ZH_ARTICLE
+        where id=#{id}
+    </select>
+    <insert id="insertUser_pl" parameterType="Commend">
+        insert into ZH_COMMEND values (#{id},#{content},#{a_id},#{level},#{u_id},#{dz_count})
+    </insert>
+    <update id="updateArticle" >
+        update ZH_ARTICLE set PL_COUNT=#{count}
+        where id=#{aid}
+    </update>
+    <select id="selectUa" resultType="UA">
+        select *from ZH_UA where A_ID=#{aid} and u_id =#{uid}
+    </select>
+    <update id="updateUA">
+        update ZH_UA set SC_STATUS=#{sc_status} where id=#{id}
+    </update>
+    <insert id="insertUA" parameterType="UA" >
+        insert into ZH_UA values (#{id},#{u_id},#{a_id},#{sc_status},#{pl_status})
+    </insert>
+    <update id="dz_com">
+        update ZH_COMMEND set dz_count=#{count} where id=#{cid}
+    </update>
+</mapper>
